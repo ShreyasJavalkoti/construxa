@@ -1,37 +1,57 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileSpreadsheet, Upload, FolderPlus, Calendar, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { FileSpreadsheet, Upload, FolderPlus, Calendar } from "lucide-react"
+import { Project } from "@/lib/supabase/client"
 
-const activities = [
-  {
-    icon: FileSpreadsheet,
-    text: "BOQ generated for Residential Complex",
-    time: "2 hours ago",
-    color: "text-green-600 bg-green-100",
-  },
-  {
-    icon: Upload,
-    text: "Drawing uploaded: Floor Plan.dwg",
-    time: "5 hours ago",
-    color: "text-blue-600 bg-blue-100",
-  },
-  {
-    icon: FolderPlus,
-    text: "Project created: Commercial Building",
-    time: "1 day ago",
-    color: "text-purple-600 bg-purple-100",
-  },
-  {
-    icon: Calendar,
-    text: "Timeline exported for Office Tower",
-    time: "2 days ago",
-    color: "text-orange-600 bg-orange-100",
-  },
-]
+interface ActivityFeedProps {
+  projects: Project[]
+}
 
-export function ActivityFeed() {
+export function ActivityFeed({ projects }: ActivityFeedProps) {
+  // Generate activity from recent projects
+  const activities = projects.slice(0, 4).map((project, index) => {
+    const activityTypes = [
+      {
+        icon: FolderPlus,
+        text: `Project created: ${project.name}`,
+        time: "Just now",
+        color: "text-purple-600 bg-purple-100",
+      },
+      {
+        icon: Upload,
+        text: `Drawing uploaded to ${project.name}`,
+        time: "2 hours ago",
+        color: "text-blue-600 bg-blue-100",
+      },
+      {
+        icon: FileSpreadsheet,
+        text: `BOQ generated for ${project.name}`,
+        time: "5 hours ago",
+        color: "text-green-600 bg-green-100",
+      },
+      {
+        icon: Calendar,
+        text: `Timeline created for ${project.name}`,
+        time: "1 day ago",
+        color: "text-orange-600 bg-orange-100",
+      },
+    ]
+    return activityTypes[index % activityTypes.length]
+  })
+
+  if (activities.length === 0) {
+    return (
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-slate-500 text-center py-8">No recent activity</p>
+        </CardContent>
+      </Card>
+    )
+  }
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -53,10 +73,6 @@ export function ActivityFeed() {
             </div>
           ))}
         </div>
-        <Button variant="ghost" size="sm" className="w-full mt-4 text-blue-600 hover:text-blue-700">
-          View all activity
-          <ArrowRight className="w-4 h-4 ml-1" />
-        </Button>
       </CardContent>
     </Card>
   )

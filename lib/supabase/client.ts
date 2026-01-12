@@ -3,8 +3,8 @@ import { env } from '../env'
 
 // Create a single supabase client for interacting with your database
 export const supabase = createClient(
-  env.supabaseUrl,
-  env.supabaseAnonKey,
+  env.supabaseUrl || 'https://placeholder.supabase.co',
+  env.supabaseAnonKey || 'placeholder-key',
   {
     auth: {
       persistSession: true,

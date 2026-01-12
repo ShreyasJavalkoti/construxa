@@ -4,8 +4,8 @@ import { Database } from './client'
 
 // Server-side Supabase client with service role key for admin operations
 export const supabaseAdmin = createClient<Database>(
-  env.supabaseUrl,
-  serverEnv.supabaseServiceRoleKey,
+  env.supabaseUrl || 'https://placeholder.supabase.co',
+  serverEnv.supabaseServiceRoleKey || 'placeholder-key',
   {
     auth: {
       autoRefreshToken: false,
