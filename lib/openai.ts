@@ -1,10 +1,20 @@
 import OpenAI from 'openai'
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
 export const AI_MODEL = 'gpt-4o-mini' // Using efficient model for cost optimization
+
+let openaiInstance: OpenAI | null = null
+
+function getOpenAI() {
+  if (!openaiInstance) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY environment variable is not set')
+    }
+    openaiInstance = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  }
+  return openaiInstance
+}
 
 export async function makeAIRequest(
   systemPrompt: string,
@@ -14,6 +24,8 @@ export async function makeAIRequest(
     maxTokens?: number
   }
 ) {
+  const openai = getOpenAI()
+  
   const response = await openai.chat.completions.create({
     model: AI_MODEL,
     messages: [
