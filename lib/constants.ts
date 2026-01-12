@@ -64,7 +64,10 @@ export const SUBSCRIPTION_PLANS = {
   },
 }
 
-// CPWD Rates (Sample rates - should be updated with actual rates)
+// CPWD Rates (Sample rates for development/testing)
+// TODO: Move to database table or external configuration file for production
+// These rates change frequently and should be maintained separately
+// Current rates are approximate and for demonstration purposes only
 export const CPWD_RATES = {
   // Earthwork
   'Excavation in foundation': { unit: 'cum', rate: 150 },
