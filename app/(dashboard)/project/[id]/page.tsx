@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Pencil, Share2, Trash2, Download, FileText, FileSpreadsheet, ChevronDown } from "lucide-react"
+import { Trash2, Download, ChevronDown, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,32 +20,68 @@ import { DrawingsTab } from "@/components/project/drawings-tab"
 import { TimelineTab } from "@/components/project/timeline-tab"
 import { BOQTab } from "@/components/project/boq-tab"
 import { SummaryTab } from "@/components/project/summary-tab"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal"
+import { useProject } from "@/hooks/use-project"
+import { toast } from "sonner"
 
 export default function ProjectDetailPage() {
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const [projectTitle, setProjectTitle] = useState("Residential Complex Phase 2")
+  const params = useParams()
+  const router = useRouter()
+  const projectId = params.id as string
+  const { project, loading, refetch } = useProject(projectId)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [activeTab, setActiveTab] = useState("drawings")
 
-  const projectStatus = "Active" // Active, Completed, Draft
+  const handleDelete = async () => {
+    setDeleting(true)
+    try {
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete project')
+      }
+
+      toast.success('Project deleted successfully')
+      router.push('/dashboard')
+    } catch (error) {
+      toast.error('Failed to delete project')
+    } finally {
+      setDeleting(false)
+      setShowDeleteDialog(false)
+    }
+  }
 
   const getStatusBadge = () => {
+    if (!project) return "bg-gray-500/10 text-gray-600 border-gray-500/20"
+    
     const variants = {
-      Active: "bg-green-500/10 text-green-600 border-green-500/20",
-      Completed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-      Draft: "bg-gray-500/10 text-gray-600 border-gray-500/20",
+      active: "bg-green-500/10 text-green-600 border-green-500/20",
+      completed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      archived: "bg-gray-500/10 text-gray-600 border-gray-500/20",
     }
-    return variants[projectStatus as keyof typeof variants] || variants.Draft
+    return variants[project.status] || variants.archived
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    )
+  }
+
+  if (!project) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Project not found</h2>
+          <Button onClick={() => router.push('/dashboard')}>Back to Dashboard</Button>
+        </div>
+      </div>
+    )
   }
 
   return (
