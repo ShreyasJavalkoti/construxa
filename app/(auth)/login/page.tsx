@@ -11,6 +11,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
 import * as z from "zod"
 
 const loginSchema = z.object({
@@ -35,10 +36,29 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    console.log("[v0] Login data:", data)
-    setIsLoading(false)
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email, password: data.password }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Login failed')
+      }
+
+      // Show success message
+      toast.success('Login successful!')
+      
+      // Redirect to dashboard
+      window.location.href = '/dashboard'
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Login failed')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

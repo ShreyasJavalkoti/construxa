@@ -73,10 +73,34 @@ export default function SignupPage() {
 
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    console.log("[v0] Signup data:", data)
-    setIsLoading(false)
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          full_name: data.fullName,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Registration failed')
+      }
+
+      toast.success('Account created successfully! Redirecting...')
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 1000)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Registration failed')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
