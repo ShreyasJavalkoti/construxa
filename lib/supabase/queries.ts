@@ -54,7 +54,7 @@ export async function updateProfile(
 ) {
   const { data, error } = await supabase
     .from('profiles')
-    .update(updates)
+    .update(updates as any)
     .eq('id', userId)
     .select()
     .single()
@@ -133,7 +133,7 @@ export async function createProject(
 ) {
   const { data, error } = await supabase
     .from('projects')
-    .insert(project)
+    .insert(project as any)
     .select()
     .single()
 
@@ -152,7 +152,7 @@ export async function updateProject(
 ) {
   let query = supabase
     .from('projects')
-    .update(updates)
+    .update(updates as any)
     .eq('id', projectId)
 
   if (userId) {
@@ -234,7 +234,7 @@ export async function createDrawing(
 ) {
   const { data, error } = await supabase
     .from('drawings')
-    .insert(drawing)
+    .insert(drawing as any)
     .select()
     .single()
 
@@ -252,7 +252,7 @@ export async function updateDrawing(
 ) {
   const { data, error } = await supabase
     .from('drawings')
-    .update(updates)
+    .update(updates as any)
     .eq('id', drawingId)
     .select()
     .single()
@@ -306,7 +306,7 @@ export async function createBOQItem(
 ) {
   const { data, error } = await supabase
     .from('boq_items')
-    .insert(item)
+    .insert(item as any)
     .select()
     .single()
 
@@ -323,7 +323,7 @@ export async function createBOQItems(
 ) {
   const { data, error } = await supabase
     .from('boq_items')
-    .insert(items)
+    .insert(items as any)
     .select()
 
   if (error) throw error
@@ -340,7 +340,7 @@ export async function updateBOQItem(
 ) {
   const { data, error } = await supabase
     .from('boq_items')
-    .update(updates)
+    .update(updates as any)
     .eq('id', itemId)
     .select()
     .single()
@@ -409,7 +409,7 @@ export async function createTimelineTask(
 ) {
   const { data, error } = await supabase
     .from('timeline_tasks')
-    .insert(task)
+    .insert(task as any)
     .select()
     .single()
 
@@ -426,7 +426,7 @@ export async function createTimelineTasks(
 ) {
   const { data, error } = await supabase
     .from('timeline_tasks')
-    .insert(tasks)
+    .insert(tasks as any)
     .select()
 
   if (error) throw error
@@ -443,7 +443,7 @@ export async function updateTimelineTask(
 ) {
   const { data, error } = await supabase
     .from('timeline_tasks')
-    .update(updates)
+    .update(updates as any)
     .eq('id', taskId)
     .select()
     .single()

@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
             full_name: full_name || null,
             company: company || null,
             phone: phone || null,
-          })
+          } as any)
           .eq('id', authData.user.id)
       } catch (profileError) {
         console.error('Profile update error:', profileError)
