@@ -109,11 +109,6 @@ export function RazorpayButton({
             if (onSuccess) {
               onSuccess()
             }
-
-            // Reload page to refresh user data
-            setTimeout(() => {
-              window.location.reload()
-            }, 2000)
           } catch (error) {
             console.error('Payment verification error:', error)
             toast.error('Payment verification failed. Please contact support.')

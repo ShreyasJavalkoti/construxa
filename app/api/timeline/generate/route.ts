@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
     })
 
     // Calculate project dates
-    const projectStartDate = start_date || new Date().toISOString().split('T')[0]
+    const { formatDateAsISOString, addDays } = await import('@/lib/utils-date')
+    const projectStartDate = start_date || formatDateAsISOString()
     const maxEndDay = Math.max(...timelineTasks.map(task => {
       const startDay = typeof task.start_date === 'string' 
         ? parseInt(task.start_date) 
@@ -75,9 +76,8 @@ export async function POST(request: NextRequest) {
     }))
     
     const startDateObj = new Date(projectStartDate)
-    const endDateObj = new Date(startDateObj)
-    endDateObj.setDate(endDateObj.getDate() + maxEndDay)
-    const projectEndDate = endDateObj.toISOString().split('T')[0]
+    const endDateObj = addDays(startDateObj, maxEndDay)
+    const projectEndDate = formatDateAsISOString(endDateObj)
 
     // Delete existing timeline if any
     await supabaseAdmin

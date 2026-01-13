@@ -63,10 +63,13 @@ Generate a realistic construction timeline considering Indian construction pract
       ? response 
       : response.tasks || response.phases || []
     
+    const DEFAULT_START_DAY = 0 // Start from day 0 (project start date)
+    const DEFAULT_DURATION_DAYS = 7 // Default task duration
+
     return tasks.map((task: any, index: number) => ({
       phase_name: task.phase_name || task.name || `Phase ${index + 1}`,
-      start_date: task.start_date?.toString() || '0',
-      duration_days: task.duration_days || task.duration || 7,
+      start_date: task.start_date?.toString() || DEFAULT_START_DAY.toString(),
+      duration_days: task.duration_days || task.duration || DEFAULT_DURATION_DAYS,
       dependencies: Array.isArray(task.dependencies) ? task.dependencies : [],
       color: task.color || generateColor(index),
       progress: task.progress || 0,

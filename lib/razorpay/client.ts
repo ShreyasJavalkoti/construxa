@@ -41,7 +41,13 @@ export function verifyPaymentSignature(
   paymentId: string,
   signature: string
 ): boolean {
-  const crypto = require('crypto')
+  // Import crypto dynamically for server-side only
+  const crypto = typeof window === 'undefined' ? require('crypto') : null
+  
+  if (!crypto) {
+    throw new Error('Payment verification is only available on the server')
+  }
+  
   const keySecret = process.env.RAZORPAY_KEY_SECRET || serverEnv.razorpayKeySecret
   
   if (!keySecret) {
