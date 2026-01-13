@@ -34,9 +34,7 @@ export function BOQTab({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     fetchBOQ()
-  }, [projectId])
-  useEffect(() => {
-    fetchBOQ()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId])
 
   const handleGenerate = async () => {

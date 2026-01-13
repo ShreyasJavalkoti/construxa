@@ -18,6 +18,7 @@ export function TimelineTab({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     fetchTimeline()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId])
 
   const handleGenerate = async () => {

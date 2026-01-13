@@ -5,6 +5,8 @@ import { analyzeDrawing, generateMockAnalysis } from '@/lib/openai/analyze'
 
 // POST: Analyze drawing with AI
 export async function POST(request: NextRequest) {
+  let drawingId: string | undefined
+
   try {
     const { data: { user } } = await supabase.auth.getUser()
     
@@ -13,9 +15,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { drawing_id } = body
+    drawingId = body.drawing_id
 
-    if (!drawing_id) {
+    if (!drawingId) {
       return NextResponse.json({ error: 'Drawing ID is required' }, { status: 400 })
     }
 
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
     const { data: drawing, error: drawingError } = await supabaseAdmin
       .from('drawings')
       .select('*, projects!inner(user_id)')
-      .eq('id', drawing_id)
+      .eq('id', drawingId)
       .single()
 
     if (drawingError || !drawing) {
@@ -84,13 +86,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Analyze drawing error:', error)
     
-    // Update status to failed
-    const body = await request.json().catch(() => ({}))
-    if (body.drawing_id) {
+    // Update status to failed if we have the drawing ID
+    if (drawingId) {
       await supabaseAdmin
         .from('drawings')
         .update({ analysis_status: 'failed' })
-        .eq('id', body.drawing_id)
+        .eq('id', drawingId)
     }
     
     return NextResponse.json({ error: 'Failed to analyze drawing' }, { status: 500 })

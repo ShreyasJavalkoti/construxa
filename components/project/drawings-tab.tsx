@@ -31,6 +31,7 @@ export function DrawingsTab({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     fetchDrawings()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId])
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
