@@ -1,17 +1,22 @@
-import { createClient } from '@supabase/supabase-js'
-import { env } from '../env'
+import { createBrowserClient } from '@supabase/ssr'
 
-// Create a single supabase client for interacting with your database
-export const supabase = createClient(
-  env.supabaseUrl || 'https://placeholder.supabase.co',
-  env.supabaseAnonKey || 'placeholder-key',
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-)
+export function createClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+  
+  return createBrowserClient(url, key)
+}
+
+// Legacy export for backward compatibility - lazy initialization
+let _supabase: ReturnType<typeof createClient> | null = null
+export const supabase = new Proxy({} as ReturnType<typeof createClient>, {
+  get(_target, prop) {
+    if (!_supabase) {
+      _supabase = createClient()
+    }
+    return (_supabase as any)[prop]
+  },
+})
 
 // Types for our database
 export type Database = {
