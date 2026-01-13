@@ -3,43 +3,47 @@
 import { Folder, FileText, FileSpreadsheet, Calendar } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
+import { Project } from "@/lib/supabase/client"
 
-const stats = [
-  {
-    title: "Total Projects",
-    value: "24",
-    subtitle: "+3 this month",
-    icon: Folder,
-    color: "from-blue-500 to-blue-600",
-    data: [4, 5, 3, 6, 7, 5, 8],
-  },
-  {
-    title: "Drawings Uploaded",
-    value: "156",
-    subtitle: "+12 this week",
-    icon: FileText,
-    color: "from-purple-500 to-purple-600",
-    data: [3, 4, 6, 5, 8, 7, 9],
-  },
-  {
-    title: "BOQs Generated",
-    value: "18",
-    subtitle: "₹2.4Cr total value",
-    icon: FileSpreadsheet,
-    color: "from-green-500 to-green-600",
-    data: [2, 3, 4, 3, 5, 6, 7],
-  },
-  {
-    title: "Timelines Created",
-    value: "22",
-    subtitle: "Avg 45 days",
-    icon: Calendar,
-    color: "from-orange-500 to-orange-600",
-    data: [5, 4, 6, 5, 7, 6, 8],
-  },
-]
+interface StatisticsCardsProps {
+  projects: Project[]
+}
 
-export function StatisticsCards() {
+export function StatisticsCards({ projects }: StatisticsCardsProps) {
+  const stats = [
+    {
+      title: "Total Projects",
+      value: projects.length.toString(),
+      subtitle: `${projects.filter(p => p.status === 'active').length} active`,
+      icon: Folder,
+      color: "from-blue-500 to-blue-600",
+      data: [4, 5, 3, 6, 7, 5, 8],
+    },
+    {
+      title: "Active Projects",
+      value: projects.filter(p => p.status === 'active').length.toString(),
+      subtitle: "In progress",
+      icon: FileText,
+      color: "from-purple-500 to-purple-600",
+      data: [3, 4, 6, 5, 8, 7, 9],
+    },
+    {
+      title: "Completed",
+      value: projects.filter(p => p.status === 'completed').length.toString(),
+      subtitle: "Total completed",
+      icon: FileSpreadsheet,
+      color: "from-green-500 to-green-600",
+      data: [2, 3, 4, 3, 5, 6, 7],
+    },
+    {
+      title: "Archived",
+      value: projects.filter(p => p.status === 'archived').length.toString(),
+      subtitle: "Archived projects",
+      icon: Calendar,
+      color: "from-orange-500 to-orange-600",
+      data: [5, 4, 6, 5, 7, 6, 8],
+    },
+  ]
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat) => (
