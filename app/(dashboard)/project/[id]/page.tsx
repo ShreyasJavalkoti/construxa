@@ -224,19 +224,19 @@ export default function ProjectDetailPage() {
             </TabsList>
 
             <TabsContent value="drawings" className="mt-0">
-              <DrawingsTab />
+              <DrawingsTab projectId={projectId} />
             </TabsContent>
 
             <TabsContent value="timeline" className="mt-0">
-              <TimelineTab />
+              <TimelineTab projectId={projectId} />
             </TabsContent>
 
             <TabsContent value="boq" className="mt-0">
-              <BOQTab />
+              <BOQTab projectId={projectId} />
             </TabsContent>
 
             <TabsContent value="summary" className="mt-0">
-              <SummaryTab />
+              <SummaryTab projectId={projectId} />
             </TabsContent>
           </Tabs>
         </motion.div>
