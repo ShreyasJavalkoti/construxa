@@ -1,143 +1,99 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Calendar, Download, RefreshCw, Sparkles } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useTimeline } from "@/hooks/use-timeline"
+import { useBOQ } from "@/hooks/use-boq"
+import { toast } from "sonner"
+import { Spinner } from "@/components/ui/spinner"
 
-interface Task {
-  id: string
-  name: string
-  start: string
-  end: string
-  duration: string
-  status: "Not Started" | "In Progress" | "Completed"
-  dependencies: string
-  color: string
-  startDay: number
-  durationDays: number
-  progress: number
-}
+export function TimelineTab({ projectId }: { projectId: string }) {
+  const { timeline, timelineData, loading, error, fetchTimeline, generateTimeline } = useTimeline(projectId)
+  const { boqData } = useBOQ(projectId)
 
-export function TimelineTab() {
-  const [tasks] = useState<Task[]>([
-    {
-      id: "1",
-      name: "Foundation",
-      start: "Jan 5",
-      end: "Jan 25",
-      duration: "20 days",
-      status: "Completed",
-      dependencies: "-",
-      color: "bg-blue-500",
-      startDay: 0,
-      durationDays: 20,
-      progress: 100,
-    },
-    {
-      id: "2",
-      name: "Structure - Ground Floor",
-      start: "Jan 20",
-      end: "Feb 15",
-      duration: "25 days",
-      status: "In Progress",
-      dependencies: "Foundation",
-      color: "bg-purple-500",
-      startDay: 15,
-      durationDays: 25,
-      progress: 60,
-    },
-    {
-      id: "3",
-      name: "Structure - First Floor",
-      start: "Feb 10",
-      end: "Mar 5",
-      duration: "23 days",
-      status: "Not Started",
-      dependencies: "Structure - Ground Floor",
-      color: "bg-purple-500",
-      startDay: 35,
-      durationDays: 23,
-      progress: 0,
-    },
-    {
-      id: "4",
-      name: "MEP - Plumbing",
-      start: "Feb 20",
-      end: "Mar 20",
-      duration: "28 days",
-      status: "Not Started",
-      dependencies: "Structure - Ground Floor",
-      color: "bg-green-500",
-      startDay: 45,
-      durationDays: 28,
-      progress: 0,
-    },
-    {
-      id: "5",
-      name: "MEP - Electrical",
-      start: "Mar 1",
-      end: "Mar 30",
-      duration: "29 days",
-      status: "Not Started",
-      dependencies: "Structure - First Floor",
-      color: "bg-green-500",
-      startDay: 55,
-      durationDays: 29,
-      progress: 0,
-    },
-    {
-      id: "6",
-      name: "Finishing - Plastering",
-      start: "Mar 15",
-      end: "Apr 10",
-      duration: "25 days",
-      status: "Not Started",
-      dependencies: "MEP - Plumbing",
-      color: "bg-orange-500",
-      startDay: 70,
-      durationDays: 25,
-      progress: 0,
-    },
-    {
-      id: "7",
-      name: "Finishing - Painting",
-      start: "Apr 5",
-      end: "Apr 25",
-      duration: "20 days",
-      status: "Not Started",
-      dependencies: "Finishing - Plastering",
-      color: "bg-orange-500",
-      startDay: 90,
-      durationDays: 20,
-      progress: 0,
-    },
-    {
-      id: "8",
-      name: "Handover",
-      start: "Apr 20",
-      end: "May 5",
-      duration: "15 days",
-      status: "Not Started",
-      dependencies: "Finishing - Painting",
-      color: "bg-red-500",
-      startDay: 105,
-      durationDays: 15,
-      progress: 0,
-    },
-  ])
+  useEffect(() => {
+    fetchTimeline()
+  }, [projectId])
+
+  const handleGenerate = async () => {
+    if (!boqData) {
+      toast.error('Please generate BOQ first before creating timeline')
+      return
+    }
+
+    toast.loading('Generating construction timeline...')
+    const result = await generateTimeline(boqData)
+    toast.dismiss()
+
+    if (result.success) {
+      toast.success('Timeline generated successfully!')
+    } else {
+      toast.error(result.error || 'Failed to generate timeline')
+    }
+  }
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      "Not Started": "bg-gray-500/10 text-gray-600 border-gray-500/20",
-      "In Progress": "bg-blue-500/10 text-blue-600 border-blue-500/20",
-      Completed: "bg-green-500/10 text-green-600 border-green-500/20",
+      "pending": "bg-gray-500/10 text-gray-600 border-gray-500/20",
+      "in_progress": "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      "completed": "bg-green-500/10 text-green-600 border-green-500/20",
     }
-    return variants[status as keyof typeof variants] || variants["Not Started"]
+    return variants[status as keyof typeof variants] || variants["pending"]
   }
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  // If no timeline data, show generate UI
+  if (!timelineData && !loading) {
+    return (
+      <div className="space-y-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <Card className="border-2 border-dashed border-green-300 bg-green-50/30">
+            <CardContent className="p-12 text-center">
+              <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Calendar className="w-16 h-16 mx-auto mb-4 text-green-600" />
+              </motion.div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Generate Construction Timeline</h3>
+              <p className="text-gray-600 mb-6">
+                Create a detailed construction timeline with proper phase sequencing
+              </p>
+              <Button
+                className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                onClick={handleGenerate}
+                disabled={loading || !boqData}
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Generate Timeline
+              </Button>
+              {!boqData && (
+                <p className="text-sm text-gray-500 mt-4">Generate BOQ first</p>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    )
+  }
+
+  // Show loading
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Spinner className="w-8 h-8 text-green-600" />
+      </div>
+    )
+  }
+
+  const phases = timelineData?.phases || []
+  const totalDuration = timelineData?.totalDuration || 0
 
   return (
     <div className="space-y-6">
@@ -147,7 +103,7 @@ export function TimelineTab() {
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-6">
               <p className="text-sm text-blue-600 mb-2">Total Duration</p>
-              <p className="text-4xl font-bold text-blue-900">120 days</p>
+              <p className="text-4xl font-bold text-blue-900">{totalDuration} days</p>
             </CardContent>
           </Card>
         </motion.div>
@@ -192,17 +148,17 @@ export function TimelineTab() {
         transition={{ duration: 0.4, delay: 0.3 }}
         className="flex flex-wrap gap-3"
       >
-        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+        <Button 
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+          onClick={handleGenerate}
+          disabled={loading}
+        >
           <Sparkles className="w-4 h-4 mr-2" />
-          Generate Timeline
+          Regenerate Timeline
         </Button>
         <Button variant="outline">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Regenerate
-        </Button>
-        <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
           <Download className="w-4 h-4 mr-2" />
-          Export to MS Project
+          Export
         </Button>
       </motion.div>
 
@@ -261,12 +217,12 @@ export function TimelineTab() {
       >
         <Card>
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Task Details</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">Phase Details</h3>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Task Name</TableHead>
+                    <TableHead>Phase Name</TableHead>
                     <TableHead>Start</TableHead>
                     <TableHead>End</TableHead>
                     <TableHead>Duration</TableHead>
@@ -275,18 +231,20 @@ export function TimelineTab() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tasks.map((task) => (
-                    <TableRow key={task.id}>
-                      <TableCell className="font-medium">{task.name}</TableCell>
-                      <TableCell>{task.start}</TableCell>
-                      <TableCell>{task.end}</TableCell>
-                      <TableCell>{task.duration}</TableCell>
+                  {phases.map((phase) => (
+                    <TableRow key={phase.id}>
+                      <TableCell className="font-medium">{phase.name}</TableCell>
+                      <TableCell>{formatDate(phase.startDate)}</TableCell>
+                      <TableCell>{formatDate(phase.endDate)}</TableCell>
+                      <TableCell>{phase.duration} days</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={getStatusBadge(task.status)}>
-                          {task.status}
+                        <Badge variant="outline" className={getStatusBadge(phase.status)}>
+                          {phase.status.replace('_', ' ')}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-gray-600">{task.dependencies}</TableCell>
+                      <TableCell className="text-gray-600">
+                        {phase.dependencies.length > 0 ? phase.dependencies.join(', ') : '-'}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -1,17 +1,31 @@
 import Razorpay from 'razorpay'
 import { env, serverEnv } from '../env'
 
-// Initialize Razorpay instance for server-side use
-export const razorpay = new Razorpay({
-  key_id: env.razorpayKeyId || process.env.RAZORPAY_KEY_ID || '',
-  key_secret: serverEnv.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || '',
+// Lazy-load Razorpay instance to avoid build-time errors
+let _razorpay: Razorpay | null = null
+
+export function getRazorpayClient(): Razorpay {
+  if (!_razorpay) {
+    _razorpay = new Razorpay({
+      key_id: env.razorpayKeyId || process.env.RAZORPAY_KEY_ID || 'placeholder',
+      key_secret: serverEnv.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET || 'placeholder',
+    })
+  }
+  return _razorpay
+}
+
+// Export as proxy for compatibility
+export const razorpay = new Proxy({} as Razorpay, {
+  get(target, prop) {
+    return getRazorpayClient()[prop as keyof Razorpay]
+  }
 })
 
 // Check if Razorpay is configured
 export function isRazorpayConfigured(): boolean {
   const keyId = env.razorpayKeyId || process.env.RAZORPAY_KEY_ID
   const keySecret = serverEnv.razorpayKeySecret || process.env.RAZORPAY_KEY_SECRET
-  return !!keyId && !!keySecret && keyId !== '' && keySecret !== ''
+  return !!keyId && !!keySecret && keyId !== '' && keySecret !== '' && keyId !== 'placeholder' && keySecret !== 'placeholder'
 }
 
 // Razorpay subscription plans

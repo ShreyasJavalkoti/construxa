@@ -272,8 +272,6 @@ export function BOQTab({ projectId }: { projectId: string }) {
                       </React.Fragment>
                     )
                   })}
-                    </>
-                  ))}
 
                   {/* Grand Total Row */}
                   <TableRow className="bg-gradient-to-r from-green-50 to-emerald-50 font-bold text-lg border-t-2 border-green-300">
