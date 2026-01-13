@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { env, serverEnv } from '../env'
-import { Database } from './client'
+import { Database } from './database.types'
 
 // Server-side Supabase client with service role key for admin operations
 export const supabaseAdmin = createClient<Database>(

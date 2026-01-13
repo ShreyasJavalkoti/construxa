@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 import { supabaseAdmin } from '@/lib/supabase/server'
+import { getUserProjects, createProject } from '@/lib/supabase/queries'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,20 +11,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: projects, error } = await supabaseAdmin
-      .from('projects')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
-    }
+    const projects = await getUserProjects(supabaseAdmin, user.id)
 
     return NextResponse.json({ projects })
   } catch (error) {
     console.error('Get projects error:', error)
-    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to fetch projects' },
+      { status: 500 }
+    )
   }
 }
 
@@ -36,32 +32,28 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, location, project_type } = body
+    const { name, description, status, start_date, end_date, estimated_duration } = body
 
-    if (!name) {
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json({ error: 'Project name is required' }, { status: 400 })
     }
 
-    const { data: project, error } = await supabaseAdmin
-      .from('projects')
-      .insert({
-        user_id: user.id,
-        name,
-        description: description || null,
-        location: location || null,
-        project_type: project_type || null,
-        status: 'active',
-      })
-      .select()
-      .single()
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
-    }
+    const project = await createProject(supabaseAdmin, {
+      user_id: user.id,
+      name: name.trim(),
+      description: description || null,
+      status: status || 'draft',
+      start_date: start_date || null,
+      end_date: end_date || null,
+      estimated_duration: estimated_duration || null,
+    })
 
     return NextResponse.json({ project }, { status: 201 })
   } catch (error) {
     console.error('Create project error:', error)
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to create project' },
+      { status: 500 }
+    )
   }
 }

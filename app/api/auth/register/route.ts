@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, full_name, company_name, phone } = await request.json()
+    const { email, password, full_name, company, phone } = await request.json()
 
     if (!email || !password) {
       return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create auth user
+    // Create auth user (trigger will auto-create profile)
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -26,23 +26,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create user profile in database
-    if (authData.user) {
-      const { error: profileError } = await supabaseAdmin
-        .from('users')
-        .insert({
-          id: authData.user.id,
-          email,
-          full_name: full_name || null,
-          company_name: company_name || null,
-          phone: phone || null,
-          subscription_tier: 'free',
-          subscription_status: 'active',
-          credits_remaining: 3,
-        })
-
-      if (profileError) {
-        console.error('Profile creation error:', profileError)
+    // Update profile with additional information if provided
+    if (authData.user && (full_name || company || phone)) {
+      try {
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            full_name: full_name || null,
+            company: company || null,
+            phone: phone || null,
+          })
+          .eq('id', authData.user.id)
+      } catch (profileError) {
+        console.error('Profile update error:', profileError)
         // Continue anyway, user can update profile later
       }
     }

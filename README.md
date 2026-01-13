@@ -24,11 +24,29 @@ See [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md) for detailed progress
 npm install
 
 # Copy environment template
-cp .env.local.example .env.local
+cp .env.example .env.local
 
 # Edit .env.local with your credentials
-# (See IMPLEMENTATION_STATUS.md for required env vars)
+# (See Environment Variables section below)
+```
 
+### Supabase Setup
+
+1. Create a new project at [Supabase](https://app.supabase.com)
+2. Go to Project Settings > API to get your `SUPABASE_URL` and API keys
+3. Run the migrations in the Supabase SQL Editor (in order):
+   - `supabase/migrations/00001_initial_schema.sql`
+   - `supabase/migrations/00002_rls_policies.sql`
+   - `supabase/migrations/00003_functions_triggers.sql`
+4. Create a storage bucket named `drawings`:
+   - Go to Storage in the Supabase dashboard
+   - Click "New bucket"
+   - Name it `drawings` and make it private
+   - Add RLS policies for user-specific access
+
+### Running the Application
+
+```bash
 # Run development server
 npm run dev
 ```
@@ -105,18 +123,21 @@ construxa/
 Required environment variables (add to `.env.local`):
 
 ```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+# Supabase - Get from https://app.supabase.com (Project Settings > API)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# OpenAI
-OPENAI_API_KEY=
+# OpenAI - Get from https://platform.openai.com/api-keys
+OPENAI_API_KEY=your_openai_api_key
 
-# Razorpay
-RAZORPAY_KEY_ID=
-RAZORPAY_KEY_SECRET=
+# Razorpay - Get from https://dashboard.razorpay.com/app/keys
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
+
+See `.env.example` for a template.
 
 ## 📖 Documentation
 

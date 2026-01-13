@@ -81,7 +81,7 @@ export function ProjectsTable({ projects, loading, onRefresh }: ProjectsTablePro
                 <TableRow className="bg-slate-50">
                   <TableHead className="font-semibold text-slate-700">Project Name</TableHead>
                   <TableHead className="font-semibold text-slate-700">Status</TableHead>
-                  <TableHead className="font-semibold text-slate-700">Location</TableHead>
+                  <TableHead className="font-semibold text-slate-700">Drawings</TableHead>
                   <TableHead className="font-semibold text-slate-700">Created Date</TableHead>
                   <TableHead className="font-semibold text-slate-700 text-right">Actions</TableHead>
                 </TableRow>
@@ -117,7 +117,7 @@ export function ProjectsTable({ projects, loading, onRefresh }: ProjectsTablePro
                         {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-600">{project.location || 'N/A'}</TableCell>
+                    <TableCell className="text-slate-600">{project.drawings_count} drawings</TableCell>
                     <TableCell className="text-slate-600">{formatDate(project.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">

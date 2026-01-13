@@ -36,9 +36,9 @@ export function StatisticsCards({ projects }: StatisticsCardsProps) {
       data: [2, 3, 4, 3, 5, 6, 7],
     },
     {
-      title: "Archived",
-      value: projects.filter(p => p.status === 'archived').length.toString(),
-      subtitle: "Archived projects",
+      title: "Draft Projects",
+      value: projects.filter(p => p.status === 'draft').length.toString(),
+      subtitle: "Draft projects",
       icon: Calendar,
       color: "from-orange-500 to-orange-600",
       data: [5, 4, 6, 5, 7, 6, 8],
