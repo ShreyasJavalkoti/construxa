@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { getProfile, updateProfile } from '@/lib/supabase/queries'
+import { filterAllowedFields } from '@/lib/api-utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,7 +34,7 @@ export async function PATCH(request: NextRequest) {
 
     const updates = await request.json()
 
-    // Validate updates - remove any fields that shouldn't be updated by users
+    // Filter to only allowed fields
     const allowedFields = [
       'full_name',
       'company',
@@ -42,12 +43,7 @@ export async function PATCH(request: NextRequest) {
       'location',
       'avatar_url',
     ]
-    const validUpdates = Object.keys(updates)
-      .filter(key => allowedFields.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = updates[key]
-        return obj
-      }, {} as Record<string, any>)
+    const validUpdates = filterAllowedFields(updates, allowedFields)
 
     if (Object.keys(validUpdates).length === 0) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })

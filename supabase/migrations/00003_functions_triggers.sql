@@ -161,12 +161,8 @@ RETURNS TRIGGER AS $$
 DECLARE
   project_id_var UUID;
 BEGIN
-  -- Get the project_id from NEW or OLD
-  IF TG_OP = 'DELETE' THEN
-    project_id_var := OLD.project_id;
-  ELSE
-    project_id_var := NEW.project_id;
-  END IF;
+  -- Get the project_id from NEW or OLD using COALESCE
+  project_id_var := COALESCE(NEW.project_id, OLD.project_id);
 
   -- Update the project's total_cost
   UPDATE projects
@@ -177,11 +173,7 @@ BEGIN
   )
   WHERE id = project_id_var;
 
-  IF TG_OP = 'DELETE' THEN
-    RETURN OLD;
-  ELSE
-    RETURN NEW;
-  END IF;
+  RETURN COALESCE(NEW, OLD);
 END;
 $$ LANGUAGE plpgsql;
 
