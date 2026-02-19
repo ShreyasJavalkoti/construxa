@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ drawing, publicUrl }, { status: 201 })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     console.error('Upload error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ tasks: insertedTasks })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     console.error('Timeline generation error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

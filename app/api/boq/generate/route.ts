@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ items: insertedItems, totalCost })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     console.error('BOQ generation error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

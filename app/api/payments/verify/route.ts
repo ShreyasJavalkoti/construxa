@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, payment })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     console.error('Payment verification error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

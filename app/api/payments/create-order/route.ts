@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
       payment_id: payment.id,
     })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     console.error('Create order error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

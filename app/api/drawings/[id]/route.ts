@@ -31,6 +31,7 @@ export async function GET(
 
     return NextResponse.json({ drawing })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
@@ -60,6 +61,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
+    // TODO(types): Replace `any` with a typed error shape for API responses.
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
