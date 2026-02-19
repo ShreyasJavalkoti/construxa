@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
           >
             <h1 className="text-5xl font-bold mb-6">Password Recovery</h1>
             <p className="text-xl text-blue-100 max-w-md">
-              Don't worry! We'll help you get back to your construction projects in no time.
+              Don&apos;t worry! We&apos;ll help you get back to your construction projects in no time.
             </p>
           </motion.div>
         </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Trash2, Download, ChevronDown, Loader2 } from "lucide-react"
+import { Trash2, Download, ChevronDown, Loader2, Pencil, FileText, FileSpreadsheet, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,7 +20,16 @@ import { DrawingsTab } from "@/components/project/drawings-tab"
 import { TimelineTab } from "@/components/project/timeline-tab"
 import { BOQTab } from "@/components/project/boq-tab"
 import { SummaryTab } from "@/components/project/summary-tab"
-import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useProject } from "@/hooks/use-project"
 import { toast } from "sonner"
 
@@ -28,10 +37,20 @@ export default function ProjectDetailPage() {
   const params = useParams()
   const router = useRouter()
   const projectId = params.id as string
-  const { project, loading, refetch } = useProject(projectId)
+  const { project, loading } = useProject(projectId)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [activeTab, setActiveTab] = useState("drawings")
+  const [projectTitle, setProjectTitle] = useState("")
+  const [projectStatus, setProjectStatus] = useState("archived")
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+
+  useEffect(() => {
+    if (!project) return
+
+    setProjectTitle(project.name)
+    setProjectStatus(project.status)
+  }, [project])
 
   const handleDelete = async () => {
     setDeleting(true)
@@ -46,7 +65,7 @@ export default function ProjectDetailPage() {
 
       toast.success('Project deleted successfully')
       router.push('/dashboard')
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete project')
     } finally {
       setDeleting(false)
@@ -253,7 +272,9 @@ export default function ProjectDetailPage() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className="bg-red-600 hover:bg-red-700">Delete Project</AlertDialogAction>
+              <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete} disabled={deleting}>
+                {deleting ? "Deleting..." : "Delete Project"}
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

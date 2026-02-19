@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -76,10 +77,12 @@ export default function ProfileTab() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
               <div className="w-32 h-32 rounded-full border-4 border-gradient-to-r from-blue-500 to-purple-500 p-1">
-                <img
+                <Image
                   src={avatarUrl || "/placeholder.svg"}
                   alt="Profile"
                   className="w-full h-full rounded-full object-cover bg-gray-100"
+                  width={120}
+                  height={120}
                 />
               </div>
               <button
