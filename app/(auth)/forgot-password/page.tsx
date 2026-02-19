@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
           >
             <h1 className="text-5xl font-bold mb-6">Password Recovery</h1>
             <p className="text-xl text-blue-100 max-w-md">
-              Don't worry! We'll help you get back to your construction projects in no time.
+              Don&apos;t worry! We&apos;ll help you get back to your construction projects in no time.
             </p>
           </motion.div>
         </div>
@@ -165,7 +165,7 @@ export default function ForgotPasswordPage() {
                   </div>
                   <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h1>
                   <p className="text-gray-600 mb-8">
-                    We've sent a password reset link to your email address. Please check your inbox and follow the
+                    We&apos;ve sent a password reset link to your email address. Please check your inbox and follow the
                     instructions.
                   </p>
                   <Link href="/login">

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
+import Image from "next/image"
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -76,9 +77,11 @@ export default function ProfileTab() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="relative">
               <div className="w-32 h-32 rounded-full border-4 border-gradient-to-r from-blue-500 to-purple-500 p-1">
-                <img
+                <Image
                   src={avatarUrl || "/placeholder.svg"}
                   alt="Profile"
+                  width={128}
+                  height={128}
                   className="w-full h-full rounded-full object-cover bg-gray-100"
                 />
               </div>

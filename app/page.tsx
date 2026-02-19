@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Cloud, Brain, Zap, Upload, Bot, Edit, Download, Check, Play } from "lucide-react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 export default function ConstructaLandingPage() {
   return (
@@ -77,7 +78,7 @@ export default function ConstructaLandingPage() {
             className="mt-16 max-w-6xl mx-auto"
           >
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
-              <img src="/modern-construction-dashboard-with-cad-drawings--t.jpg" alt="Construxa Dashboard Preview" className="w-full h-auto" />
+              <Image src="/modern-construction-dashboard-with-cad-drawings--t.jpg" alt="Construxa Dashboard Preview" width={1600} height={900} className="w-full h-auto" />
               <div className="absolute inset-0 bg-gradient-to-t from-blue-500/20 to-transparent" />
             </div>
           </motion.div>
