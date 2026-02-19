@@ -15,7 +15,7 @@ export default function DashboardPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const { projects, loading: projectsLoading, refetch } = useProjects()
-  const { user, loading: userLoading } = useUser()
+  const { user } = useUser()
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -29,7 +29,7 @@ export default function DashboardPage() {
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
               <p className="text-slate-600 mt-1">
-                Welcome back, {user?.full_name || 'User'}! Here's your project overview.
+                Welcome back, {user?.full_name || 'User'}! Here&apos;s your project overview.
               </p>
             </div>
             <QuickActions onCreateProject={() => setShowCreateModal(true)} />
